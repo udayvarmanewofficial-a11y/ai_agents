@@ -30,6 +30,10 @@ fi
 
 # Activate virtual environment
 echo "Activating virtual environment..."
+if [ ! -f venv/bin/activate ]; then
+  echo "Creating virtual environment..."
+  python3 -m venv venv
+fi
 source venv/bin/activate
 
 # Install dependencies
