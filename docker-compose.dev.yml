@@ -1,0 +1,52 @@
+# Docker Compose for Local Development
+# Only runs supporting services (DB, Redis, Qdrant)
+# Backend and Frontend run directly on your machine
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: planner-postgres-dev
+    environment:
+      POSTGRES_DB: planner_db
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "54320:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: planner-redis-dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data_dev:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: planner-qdrant-dev
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data_dev:/qdrant/storage
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data_dev:
+  redis_data_dev:
+  qdrant_data_dev:
