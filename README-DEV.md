@@ -246,3 +246,7 @@ docker-compose -f docker-compose.dev.yml up -d
 - Check frontend logs: Look in terminal running `run-frontend-dev.sh`
 - Check Docker services: `docker-compose -f docker-compose.dev.yml logs`
 - Database issues: `./setup-db-dev.sh` to reset migrations
+
+
+## Known issues 
+If the default 8000 port is already in use, use `lsof -ti:8000` to list he process IDs using this port. Then use `kill -9 <PID>` to kill the process.
