@@ -8,7 +8,6 @@ from typing import List, Union
 import numpy as np
 from app.core.config import settings
 from app.core.logging import app_logger
-from sentence_transformers import SentenceTransformer
 
 
 class EmbeddingService:
@@ -26,9 +25,11 @@ class EmbeddingService:
         self.device = device or settings.embedding_device
         self.logger = app_logger
         
-        # Load the embedding model
+        # Load the embedding model (lazy import to avoid startup issues)
         try:
             self.logger.info(f"Loading embedding model: {self.model_name}")
+            # Import here to avoid loading heavy dependencies at module import time
+            from sentence_transformers import SentenceTransformer
             self.model = SentenceTransformer(self.model_name, device=self.device)
             self.dimension = self.model.get_sentence_embedding_dimension()
             self.logger.info(f"Embedding model loaded. Dimension: {self.dimension}")
