@@ -32,6 +32,22 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         app_logger.error(f"Failed to initialize database: {e}")
     
+    # Preload embedding model in background to avoid delays during task processing
+    import asyncio
+    async def preload_embedding_model():
+        """Preload the embedding model in background."""
+        try:
+            app_logger.info("Preloading embedding model in background...")
+            from app.services.embeddings import get_embedding_service
+            # This will download and cache the model
+            get_embedding_service()
+            app_logger.info("Embedding model preloaded successfully")
+        except Exception as e:
+            app_logger.warning(f"Failed to preload embedding model: {e}")
+    
+    # Start preloading in background (non-blocking)
+    asyncio.create_task(preload_embedding_model())
+    
     # Initialize services (they will be lazy-loaded on first use)
     app_logger.info("Services ready for initialization on demand")
     
